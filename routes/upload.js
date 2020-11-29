@@ -11,7 +11,7 @@ const { saveToBuffer, saveDurability } = require('../src/xsyncfs');
 router.post('/', [multer.single('attachment')], function (req, res, next) {
 
   if (req.file) {
-    const fileData = storeWithOriginalName(req.file)
+    const fileData = {... storeWithOriginalName(req.file), type: req.body.type}
     if (req.body.type == 'durability') {
       saveDurability(fileData, fileData.process);
     } else {
@@ -30,6 +30,7 @@ const storeWithOriginalName = (file) => {
     content,
     mimetype: file.mimetype,
     process: file.filename,
+    action: 'write'
   }
 };
 

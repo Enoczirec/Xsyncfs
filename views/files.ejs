@@ -7,23 +7,27 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="./stylesheets/style.css">
   <title>Xsyncfs</title>
-  <script src="https://d3js.org/d3.v4.js"></script>
 </head>
 
 <body>
+  <%var counter = {}; %>
   <div class="bg-3 text-center">
     <div class="row fixed-form">
       <form class="config" method="post" action="/config">
         <div class="col-sm-4">
-          <label for="timer">Tiempo de guardado:</label><br>
+          <label for="timer">Tiempo de guardado (s):</label><br>
           <input name="timer" id="timer" type="number" min="0" max="60" step="1" pattern="\d*">
         </div>
         <div class="col-sm-3">
-          <label for="speculative">Probabilidad especulativa:</label><br>
+          <label for="speculative">Probabilidad especulativa (%):</label><br>
           <input name="speculative" id="speculative" type="number" min="1" max="100" step="1" pattern="\d*">
         </div>
-        <div class="col-sm-5">
+        <div class="col-sm-3">
           <button class="buttonFormHeader" type="submit">Aceptar</button>
+        </div>
+        <div class="col-sm-3">
+          <label>Tiempo de guardado: <%=timer%> segundos</label>
+          <label>Probabilidad especulativa: <%=speculative%>%</label>
         </div>
       </form>
     </div>
@@ -113,7 +117,7 @@
         </table>
         <% } %>
       </div>
-      <div class="col-sm-9 speculator">
+      <div class="col-sm-10 speculator">
         <h2>Speculator Log:</h2>
         <% if (Object.keys(speculator).length === 0) { %>
         <em>Por el momento no hay logs</em>
@@ -123,8 +127,12 @@
             <tr>
               <th>Id Proceso</th>
               <th>Nombre archivo</th>
-              <th>Estado de especulación</th>
+              <th>Especulación</th>
+              <th>Tipo</th>
               <th>Commit Dependency</th>
+              <th>Acción</th>
+              <th>Estado</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -132,20 +140,34 @@
             <tr>
               <td><%= key %></td>
               <td><%= speculator[key].fileName %></td>
-              <td><%= speculator[key].successful %></td>
+              <td><%= speculator[key].type == 'speculative' ? ( speculator[key].successful ? 'Exitoso' : 'Fallido') : '' %></td>
+              <td><%= speculator[key].type %></td>
               <td><%= speculator[key].commit_dependency %></td>
+              <td><%= speculator[key].action %></td>
+              <td>
+                <%= speculator[key].action == 'write' ? (speculator[key].processed ? 'Procesado' : 'No procesado') : (speculator[key].readSuccess ? 'Procesado' : 'No procesado') %>
+              </td>
+              <td>
+                <% if (speculator[key].successful == false && counter[speculator[key].fileName] == undefined && speculator[key].action == 'write') {%>
+                <form class="openFile" method="post" action="/retry/<%=key%>">
+                  <button type="submit">Reintentar</button>
+                </form>
+                <% counter[speculator[key].fileName] = 1%>
+                <%}%>
+              </td>
             </tr>
             <% }) %>
           </tbody>
         </table>
         <% } %>
       </div>
-      <div class="col-sm-3 speculator" id="graph">
+      <div class="col-sm-2 speculator" id="graph">
         <form method="post" action="/nuke">
-          <button class="buttonNuke" type="submit">Eliminar todo</button>
+          <button class="buttonNuke" type="submit">Reestablecer todo</button>
         </form>
       </div>
     </div>
   </div>
 </body>
+
 </html>
