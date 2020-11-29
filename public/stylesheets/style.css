@@ -1,0 +1,163 @@
+body {
+  padding: 20px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00b7ff;
+}
+
+table {
+  text-align: center;
+  position: relative;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 0.25rem;
+  text-align: center;
+  padding-top: 0.5rem;
+}
+
+th {
+  text-align: center;
+  background: white;
+  position: sticky;
+  top: 0;
+  /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.fixed-size {
+  height: 250px;
+  overflow: scroll;
+}
+
+.fixed-form {
+  overflow: scroll;
+}
+
+.speculator {
+  height: 300px;
+  overflow: scroll;
+}
+
+.type {
+  display: inline-flex;
+}
+
+.buttonForm {
+  display: block;
+  width: 200px;
+  padding: 10px;
+  margin: 20px auto 0;
+  border: none;
+  border-radius: 5px;
+  background: #1c87c9;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.buttonNuke {
+  display: block;
+  width: 200px;
+  padding: 10px;
+  margin: 20px auto 0;
+  border: none;
+  border-radius: 5px;
+  background: red;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.buttonFormHeader {
+  display: block;
+  width: 200px;
+  padding: 10px;
+  margin: 20px auto 20px;
+  border: none;
+  border-radius: 5px;
+  background: #1c87c9;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+input[type="radio"] {
+  display: none;
+}
+input[type="file"] {
+  display: inline-flex;
+  padding-left: 15%;
+}
+
+textarea {
+  width: 100%;
+  height: 80%;
+  resize: none;
+}
+
+.form {
+  padding-top: 2em;
+}
+
+label.radio {
+  position: relative;
+  display: inline-block;
+  margin-right: 20px;
+  text-indent: 32px;
+  cursor: pointer;
+}
+
+label.radio:before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid #1c87c9;
+}
+
+label.radio:after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 4px;
+  top: 5px;
+  left: 5px;
+  border-bottom: 3px solid #1c87c9;
+  border-left: 3px solid #1c87c9;
+  transform: rotate(-45deg);
+  opacity: 0;
+}
+
+input[type="radio"]:checked + label:after {
+  opacity: 1;
+}
+
+input[type="number"] {
+  width: 25%;
+}
+
+ul {
+  margin: 0;
+  margin-left: 25px;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: #1c87c9;
+  font-size: 16px;
+  line-height: 22px;
+  text-align: left;
+}
+.openFile {
+  display: inline;
+}
+.config {
+  display: flex;
+}

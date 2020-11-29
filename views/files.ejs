@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./stylesheets/style.css">
+  <title>Xsyncfs</title>
+  <script src="https://d3js.org/d3.v4.js"></script>
+</head>
+
+<body>
+  <div class="bg-3 text-center">
+    <div class="row fixed-form">
+      <form class="config" method="post" action="/config">
+        <div class="col-sm-4">
+          <label for="timer">Tiempo de guardado:</label><br>
+          <input name="timer" id="timer" type="number" min="0" max="60" step="1" pattern="\d*">
+        </div>
+        <div class="col-sm-3">
+          <label for="speculative">Probabilidad especulativa:</label><br>
+          <input name="speculative" id="speculative" type="number" min="1" max="100" step="1" pattern="\d*">
+        </div>
+        <div class="col-sm-5">
+          <button class="buttonFormHeader" type="submit">Aceptar</button>
+        </div>
+      </form>
+    </div>
+    <div class="row">
+      <div class="col-sm-4 fixed-size">
+        <h2>Archivos:</h2>
+        <% if (Object.keys(disk_buffer).length === 0) { %>
+        <em>Aún no hay archivos</em>
+        <% } else { %>
+        <ul>
+          <% Object.keys(disk_buffer).forEach(key => {  %>
+          <li><%= key %>
+            <form class="openFile" method="post" action="/open/<%=key%>">
+              <button type="submit">Abrir</button>
+            </form>
+          </li>
+          <% }) %>
+        </ul>
+        <% } %>
+      </div>
+      <div class="col-sm-3 fixed-size">
+        <h4>Contenido:</h4>
+        <textarea name="content" placeholder="<%=content%>" disabled></textarea>
+      </div>
+      <div class="col-sm-5 fixed-size">
+        <h2>Subir un archivo</h2>
+        <form name="upload-form" action="upload" class="form" method="post" enctype="multipart/form-data">
+          <input type="file" name="attachment" id="attachment" accept="text/plain">
+          <div class="type">
+            <div>
+              <input type="radio" value="durability" id="radioOne" name="type" checked />
+              <label for="radioOne" class="radio">Duradero</label>
+            </div>
+            <div>
+              <input type="radio" value="speculative" id="radioTwo" name="type" />
+              <label for="radioTwo" class="radio">Especulativo</label>
+            </div>
+          </div>
+          <button class="buttonForm" type="submit">Subir</button>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 fixed-size">
+        <h2>Buffer/Memoria:</h2>
+        <% if (Object.keys(buffer).length === 0) { %>
+        <em>Buffer vacío</em>
+        <% } else { %>
+        <table>
+          <tr>
+            <th>Id proceso</th>
+            <th>Nombre Archivo</th>
+            <th>Tipo</th>
+          </tr>
+          <% Object.keys(buffer).forEach(key => { %>
+          <tr>
+            <td><%= buffer[key].process %></td>
+            <td><%= buffer[key].fileName %></td>
+            <td><%= buffer[key].mimetype %></td>
+          </tr>
+          <% }) %>
+        </table>
+        <% } %>
+      </div>
+      <div class="col-sm-6 fixed-size">
+        <h2>Disco:</h2>
+        <% if (Object.keys(disk).length === 0) { %>
+        <em>No hay datos en disco duro</em>
+        <% } else { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre Archivo</th>
+              <th>Tipo</th>
+              <th>Modificado por</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Object.keys(disk).forEach(key => { %>
+            <tr>
+              <td><%= key %></td>
+              <td><%= disk[key].mimetype %></td>
+              <td><%= disk[key].process %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+      <div class="col-sm-9 speculator">
+        <h2>Speculator Log:</h2>
+        <% if (Object.keys(speculator).length === 0) { %>
+        <em>Por el momento no hay logs</em>
+        <% } else { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Id Proceso</th>
+              <th>Nombre archivo</th>
+              <th>Estado de especulación</th>
+              <th>Commit Dependency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Object.keys(speculator).forEach(key => { %>
+            <tr>
+              <td><%= key %></td>
+              <td><%= speculator[key].fileName %></td>
+              <td><%= speculator[key].successful %></td>
+              <td><%= speculator[key].commit_dependency %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+      <div class="col-sm-3 speculator" id="graph">
+        <form method="post" action="/nuke">
+          <button class="buttonNuke" type="submit">Eliminar todo</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
