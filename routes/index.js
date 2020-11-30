@@ -1,32 +1,36 @@
 var express = require('express');
-var fs = require('fs')
-var path = require('path')
-var util = require('util')
+var fs = require('fs');
+var path = require('path');
 
 var router = express.Router();
 var CronJob = require('cron').CronJob;
 var CronTime = require('cron').CronTime;
 
-const { getBuffer, getSpeculator, getDisk, getDiskBuffer, getFile, commitBufferToDisk, setSuccessRate, nuke } = require('../src/xsyncfs.js');
+const { 
+  getBuffer, 
+  getSpeculator, 
+  getDisk, 
+  getDiskBuffer,
+  getFile, 
+  commitBufferToDisk, 
+  setSuccessRate, 
+  getSuccessRate, 
+  nuke,
+  updateSpeculator,
+} = require('../src/xsyncfs.js');
 
 let timer = 10;
 let content = "";
-let time_counter = 0;
 const uploads_path = 'public/uploads';
 
 
 router.get('/', function (req, res, next) {
-  const testFolder = path.join(__dirname, '../public/uploads')
-  var readdir = util.promisify(fs.readdir)
   const disk_buffer = getDiskBuffer();
   const buffer = getBuffer();
   const disk = getDisk();
   const speculator = getSpeculator();
-  return readdir(testFolder)
-    .then(files => {
-      res.render('files.ejs', { files, buffer, disk, speculator, disk_buffer, content })
-    })
-    .catch(next)
+  const speculative = getSuccessRate();
+  res.render('files.ejs', { timer, speculative, buffer, disk, speculator, disk_buffer, content })
 });
 
 router.post('/open/:fileName', function(req, res, next) {
@@ -37,7 +41,6 @@ router.post('/open/:fileName', function(req, res, next) {
 
 router.post('/config', function(req, res, next) {
   const body = req.body;
-  console.log(body);
   if(body.timer != null && body.timer != '') {
     setTimer(body.timer);
   }
@@ -58,6 +61,12 @@ router.post('/nuke', function(req, res, next) {
   res.redirect('/');
 });
 
+router.post('/retry/:processId', function(req, res, next) {
+  const processId = req.params.processId;
+  updateSpeculator(processId)
+  res.redirect('/');
+})
+
 var job = new CronJob(`*/${timer} * * * * *`, function () {
   commitBufferToDisk()
 }, null, true, 'America/Mexico_City');
@@ -74,13 +83,5 @@ const setTimer = (new_timer) => {
 const setContent = (new_content) => {
   content = new_content;
 };
-
-const getTimeCounter = () => {
-  return time_counter;
-}
-
-const setTimeCounter = (timer) => {
-  time_counter += timer;
-}
 
 module.exports = router;
